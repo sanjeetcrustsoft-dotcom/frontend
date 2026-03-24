@@ -1,12 +1,36 @@
-import React from 'react'
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import AdminPanel from './pages/AdminPanel';
 
 const App = () => {
   return (
-     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1> Deployment Success</h1>
-      <p  style={{ color: "green", fontSize: "30px",marginTop: "10px" }}>This app is deployed using Vercel</p>
-    </div>
-  )
-}
+    <AuthProvider>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-export default App
+        {/* Protected routes - must be logged in */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+
+        {/* Admin-only routes */}
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminPanel />} />
+        </Route>
+
+        {/* Default redirect */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </AuthProvider>
+  );
+};
+
+export default App;
